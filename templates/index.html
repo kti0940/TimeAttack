@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+
+</head>
+<style>
+    .board {
+        border: solid 2px black;
+        width: 350px;
+        height: 350px;
+        padding: 80px;
+        margin: 30px 30px 30px 30px;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+</style>
+<script>
+    $(document).ready(function () {
+        show_board();
+    });
+
+    function show_board() {
+        $.ajax({
+            type: 'GET',
+            url: '/board',
+            data: {},
+            success: function (response) {
+                let rows = response['boards']
+                for (let i = 0; i < rows.length; i++) {
+                    let title = rows[i]['title']
+                    let comment = rows[i]['comment']
+
+                    let temp_html = `
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">${title}</th>
+                            <th scope="col">${comment}</th>
+                            <th scope="col">kti</th>
+                            <th scope="col">time</th>
+                        </tr>`
+                    $('#boards-box').append(temp_html);
+                }
+            }
+        });
+    }
+
+    function save_board() {
+        let title = $('#title').val()
+        let comment = $('#comment').val()
+
+        $.ajax({
+            type: 'POST',
+            url: '/board',
+            data: {title_give: title, comment_give: comment},
+            success: function (response) {
+                alert(response['msg'])
+                window.location.reload()
+            }
+        });
+    }
+</script>
+<body>
+
+<h1>게시판</h1>
+<div class="board">
+    <div>
+        제목<br>
+        <input id="title" type="email" class="form-control" id="exampleFormControlInput1" style="width: 250px">
+    </div>
+    <div>
+        내용<br>
+        <textarea id="comment" class="form-control" id="exampleFormControlTextarea1" rows="3"
+                  style="width: 250px; height: 150px;"></textarea>
+    </div>
+    <button onclick="save_board()" type="button" class="btn btn-primary" style="margin: 20px;">저장하기</button>
+</div>
+
+<table class="table" id="boards-box">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">제목</th>
+        <th scope="col">내용</th>
+        <th scope="col">글쓴이</th>
+        <th scope="col">시각</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+</body>
+</html>
